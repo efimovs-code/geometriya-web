@@ -344,6 +344,7 @@ onUnmounted(() => {
   .hero-content {
     align-items: center;
     max-width: 100%;
+    margin-top: 80px; /* <--- ИЗМЕНЕНИЕ ЗДЕСЬ: Отступ компенсирует высоту шапки */
   }
   
   .hero-title {

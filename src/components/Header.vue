@@ -128,7 +128,7 @@ const scrollToSectionMobile = (sectionId) => {
   closeMenu();
   setTimeout(() => {
     scrollToSection(sectionId);
-  }, 300);
+  }, 10); // Уменьшил задержку скролла, так как меню закрывается моментально
 };
 
 const openContactModal = () => {
@@ -298,12 +298,14 @@ onUnmounted(() => {
   transform: translate(-50%, 50%) rotate(-45deg);
 }
 
+/* ================== УБРАНЫ АНИМАЦИИ В БЛОКАХ НИЖЕ ================== */
+
 .mobile-menu {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh; /* Используем vh для гарантии высоты на весь экран */
+  height: 100vh;
   background-color: #ffffff;
   z-index: 100;
   display: flex;
@@ -312,7 +314,7 @@ onUnmounted(() => {
   padding: 0 40px;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  /* transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); — УДАЛЕНО */
 }
 
 .mobile-menu.is-open {
@@ -325,14 +327,10 @@ onUnmounted(() => {
   flex-direction: column;
   width: 100%;
   gap: 60px;
-  transform: translateY(20px);
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  transition-delay: 0.1s;
+  /* Смещение вниз и анимации тоже удалены */
 }
 
-.mobile-menu.is-open .mobile-menu-content {
-  transform: translateY(0);
-}
+/* Блок .mobile-menu.is-open .mobile-menu-content { transform: translateY(0); } тоже удален */
 
 .mobile-nav {
   display: flex;
@@ -394,7 +392,7 @@ onUnmounted(() => {
   .header-section.is-hidden {
     position: fixed !important;
     top: 0 !important;
-    transform: none !important; /* Исправлено: убрано translateY(0) */
+    transform: none !important; 
     padding: 20px 0 !important;
     background: #ffffff !important;
     backdrop-filter: none !important;

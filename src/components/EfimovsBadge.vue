@@ -11,7 +11,11 @@
       <span class="watermark-top" v-once>Created by</span>
       <span class="watermark-bottom" v-once>Efimovs Agency</span>
     </div>
-    <img src="../assets/transparent.png" alt="Efimovs Agency" class="watermark-logo" />
+    <img
+      src="../assets/transparent.png"
+      alt="Efimovs Agency"
+      class="watermark-logo"
+    />
   </a>
 </template>
 
@@ -19,9 +23,9 @@
 defineProps({
   theme: {
     type: String,
-    default: 'dark', // 'dark' for light/white/gray backgrounds, 'light' for dark backgrounds
-    validator: (value) => ['light', 'dark'].includes(value)
-  }
+    default: "dark", // 'dark' for light/white/gray backgrounds, 'light' for dark backgrounds
+    validator: (value) => ["light", "dark"].includes(value),
+  },
 });
 </script>
 
@@ -50,9 +54,16 @@ defineProps({
 .watermark-text {
   display: flex;
   flex-direction: column;
-  align-items: flex-end; 
+  align-items: flex-end;
   gap: 2px;
-  font-family: 'Montserrat', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    "Montserrat",
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
 }
 
 .watermark-top {
@@ -60,14 +71,14 @@ defineProps({
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 3.15px;
-  margin-right: -3.15px; 
+  margin-right: -3.15px;
   transition: color 0.3s ease;
 }
 
 .watermark-bottom {
   margin: 0;
   font-size: 18px;
-  font-weight: 600; 
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.9px;
   transition: color 0.3s ease;
@@ -78,9 +89,9 @@ defineProps({
    ========================================================================== */
 .watermark-logo {
   width: auto;
-  height: 46px; 
+  height: 46px;
   object-fit: contain;
-  image-rendering: high-quality; 
+  image-rendering: high-quality;
   transition: filter 0.3s ease;
 }
 
@@ -89,10 +100,10 @@ defineProps({
    ========================================================================== */
 /* THEME: DARK (For placement on light, white, or gray backgrounds) */
 .theme-dark .watermark-top {
-  color: rgba(5, 5, 5, 0.5); 
+  color: rgba(5, 5, 5, 0.5);
 }
 .theme-dark .watermark-bottom {
-  color: #050505; 
+  color: #050505;
 }
 .theme-dark .watermark-logo {
   filter: invert(1) drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.05));
@@ -106,16 +117,24 @@ defineProps({
   color: #ffffff;
 }
 .theme-light .watermark-logo {
-  filter: none; 
+  filter: none;
 }
 
 /* ==========================================================================
    MOBILE RESPONSIVENESS
    ========================================================================== */
 @media (max-width: 767px) {
-  .elite-watermark { gap: 12px; }
-  .watermark-top { font-size: 8px; }
-  .watermark-bottom { font-size: 15px; }
-  .watermark-logo { height: 40px; }
+  .elite-watermark {
+    gap: 12px;
+  }
+  .watermark-top {
+    font-size: 8px;
+  }
+  .watermark-bottom {
+    font-size: 15px;
+  }
+  .watermark-logo {
+    height: 40px;
+  }
 }
 </style>

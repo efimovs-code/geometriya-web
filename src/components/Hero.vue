@@ -1,23 +1,21 @@
 <template>
-  <section class="hero-section">
+  <!-- Динамически биндим точную высоту в пикселях -->
+  <section class="hero-section" :style="{ minHeight: exactHeightPx + 'px' }">
     <div class="hero-container">
       
       <!-- ==========================================================================
            CONTENT BLOCK
            ========================================================================== -->
       <div class="hero-content">
-        <!-- Headline -->
         <h1 class="hero-title animate-title">
           Створюємо нові<br/>концепції
         </h1>
         
-        <!-- Subtitle / Description -->
         <p class="hero-description animate-desc">
           Наша мета — наповнити кожен простір справжнім затишком,<br />
           поєднавши бездоганну естетику та абсолютний комфорт.
         </p>
         
-        <!-- Call to Action Buttons -->
         <div class="hero-actions animate-actions">
           <div class="btn-wrapper">
             <a href="#portfolio" class="btn btn-dark">Переглянути колекцію</a>
@@ -55,9 +53,6 @@
 
     </div>
 
-    <!-- ==========================================================================
-         MODAL TELEPORT
-         ========================================================================== -->
     <Teleport to="body">
       <ContactModal :isOpen="isModalOpen" @close="isModalOpen = false" />
     </Teleport>
@@ -65,15 +60,34 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import ContactModal from './ContactModal.vue';
 
-// State management for contact modal
 const isModalOpen = ref(false);
+
+// Устанавливаем базовое значение в пикселях (fallback)
+const exactHeightPx = ref(900); 
 
 const openModal = () => {
   isModalOpen.value = true;
 };
+
+// Функция для точного расчета высоты экрана в пикселях
+const calculateScreenHeight = () => {
+  exactHeightPx.value = window.innerHeight;
+};
+
+onMounted(() => {
+  // Сразу при монтировании компонента вычисляем высоту
+  calculateScreenHeight();
+  
+  // Добавляем слушатель изменения размера окна (если пользователь перевернет телефон)
+  window.addEventListener('resize', calculateScreenHeight);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', calculateScreenHeight);
+});
 </script>
 
 <style scoped>
@@ -85,14 +99,13 @@ const openModal = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  min-height: 100dvh; 
+  /* min-height удален отсюда, так как теперь он задается строго в JS */
   background-color: #e6e6e6;
   overflow: hidden;
   z-index: 10;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05);
+  perspective: 2000px; 
   
-  /* Font inheritance base to avoid repeating font-family across elements */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -103,37 +116,35 @@ const openModal = () => {
   align-items: center;
   justify-content: space-between;
   gap: 60px;
-  width: 100%;
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 0 40px;
+  width: 1300px;
+  margin: 0px auto;
+  padding: 0px 40px;
 }
 
 /* ==========================================================================
    CONTENT TYPOGRAPHY
    ========================================================================== */
 .hero-content {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  max-width: 650px;
+  width: 650px;
 }
 
 .hero-title {
-  margin: 0 0 24px 0;
+  margin: 0px 0px 24px 0px;
   font-size: 88px;
   font-weight: 600;
   color: #795c46;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
-  white-space: nowrap; /* Prevents text from breaking into 3 lines */
+  line-height: 96px;
+  letter-spacing: -2px;
+  white-space: nowrap; 
 }
 
 .hero-description {
-  margin: 0 0 48px 0;
+  margin: 0px 0px 48px 0px;
   font-size: 20px;
   color: #4a4a4a;
-  line-height: 1.7;
+  line-height: 34px;
 }
 
 /* ==========================================================================
@@ -142,6 +153,7 @@ const openModal = () => {
 .hero-actions {
   display: flex;
   gap: 20px;
+  width: 650px;
 }
 
 .btn-wrapper {
@@ -159,7 +171,7 @@ const openModal = () => {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 2px;
-  white-space: nowrap; /* Ensures button text remains on a single line */
+  white-space: nowrap; 
   border-radius: 100px;
   cursor: pointer;
   text-decoration: none;
@@ -177,7 +189,7 @@ const openModal = () => {
   background-color: #c5a059;
   border-color: #c5a059;
   transform: translateY(-4px);
-  box-shadow: 0 15px 30px rgba(197, 160, 89, 0.2);
+  box-shadow: 0px 15px 30px rgba(197, 160, 89, 0.2);
 }
 
 .btn-outline {
@@ -189,18 +201,18 @@ const openModal = () => {
 .btn-wrapper:hover .btn-outline {
   border-color: #050505;
   transform: translateY(-4px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.08);
 }
 
 /* ==========================================================================
    3D GEOMETRY VISUALS
    ========================================================================== */
 .hero-visual {
-  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
+  width: 500px;
   height: 500px;
 }
 
@@ -209,13 +221,13 @@ const openModal = () => {
   width: 400px;
   height: 400px;
   perspective: 1200px;
-  filter: drop-shadow(0 40px 50px rgba(121, 92, 70, 0.15));
+  filter: drop-shadow(0px 40px 50px rgba(121, 92, 70, 0.15));
 }
 
 .cube {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 200px; 
+  left: 200px;
   transform-style: preserve-3d;
 }
 
@@ -237,14 +249,15 @@ const openModal = () => {
 
 .face {
   position: absolute;
-  width: 100%;
-  height: 100%;
   backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   transition: all 0.3s ease;
 }
 
 /* Outer Cube Faces */
 .outer-cube .face {
+  width: 280px;
+  height: 280px;
   border: 1px solid rgba(121, 92, 70, 0.4);
   background: rgba(121, 92, 70, 0.03);
 }
@@ -257,6 +270,8 @@ const openModal = () => {
 
 /* Inner Cube Faces */
 .inner-cube .face {
+  width: 140px;
+  height: 140px;
   border: 2px solid rgba(5, 5, 5, 0.8);
   background: rgba(5, 5, 5, 0.05);
 }
@@ -282,12 +297,12 @@ const openModal = () => {
 
 @keyframes fadeUp {
   0% { opacity: 0; transform: translateY(40px); }
-  100% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 1; transform: translateY(0px); }
 }
 
 @keyframes scaleFadeIn {
-  0% { opacity: 0; transform: scale(0.8) translateZ(-100px); }
-  100% { opacity: 1; transform: scale(1) translateZ(0); }
+  0% { opacity: 0; transform: translateZ(-300px); }
+  100% { opacity: 1; transform: translateZ(0px); }
 }
 
 /* Staggered Entry Sequence */
@@ -301,61 +316,66 @@ const openModal = () => {
 .animate-visual  { animation: scaleFadeIn 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.6s; }
 
 /* ==========================================================================
-   RESPONSIVE DESIGN
+   STRICT ADAPTIVE DESIGN (ONLY PX)
    ========================================================================== */
+@media (max-width: 1400px) {
+  .hero-container { width: 1140px; }
+  .hero-content { width: 550px; }
+  .hero-visual { width: 450px; }
+}
+
+@media (max-width: 1200px) {
+  .hero-container { width: 960px; }
+  .hero-content { width: 450px; }
+  .hero-title { font-size: 64px; line-height: 72px; }
+  .hero-visual { width: 400px; }
+}
+
 @media (max-width: 992px) {
-  .hero-container {
+  .hero-container { 
+    width: 720px; 
+    flex-direction: column; 
     justify-content: center;
     text-align: center;
-    padding: 0 24px;
+    padding: 0px 24px; 
   }
+  .hero-content { 
+    width: 720px; 
+    align-items: center; 
+  }
+  .hero-title { font-size: 56px; line-height: 64px; }
+  .hero-description { width: 500px; margin-bottom: 40px; }
   
-  .hero-content {
-    align-items: center;
-    max-width: 100%;
-  }
+  .hero-description br { display: none; }
   
-  .hero-title {
-    font-size: 56px;
-  }
-  
-  .hero-description {
-    max-width: 500px;
-    margin-bottom: 40px;
-  }
+  .hero-actions { justify-content: center; }
+  .hero-visual { display: none; }
+}
 
-  /* Hide <br> tags on mobile for natural text flow */
-  .hero-description br {
-    display: none;
-  }
-
-  .hero-visual {
-    display: none;
-  }
+@media (max-width: 768px) {
+  .hero-container { width: 540px; }
+  .hero-content { width: 540px; }
 }
 
 @media (max-width: 576px) {
-  .hero-container {
-    padding: 0 20px;
-  }
-
-  .hero-title {
-    font-size: clamp(32px, 10vw, 44px); /* Fluid typography for small devices */
+  .hero-container { width: 320px; padding: 0px 10px; }
+  .hero-content { width: 300px; }
+  .hero-title { font-size: 32px; line-height: 40px; }
+  .hero-description { width: 300px; font-size: 16px; line-height: 28px; }
+  
+  .hero-actions { 
+    flex-direction: column; 
+    width: 300px; 
+    gap: 16px; 
   }
   
-  .hero-actions {
-    flex-direction: column;
-    width: 100%;
-    gap: 16px;
+  .btn-wrapper, .btn { 
+    width: 300px; 
   }
-
-  .btn-wrapper, .btn {
-    width: 100%;
-  }
-
-  .btn {
-    padding: 18px 16px;
-    font-size: 11.5px;
+  
+  .btn { 
+    padding: 18px 16px; 
+    font-size: 12px; 
   }
 }
 </style>

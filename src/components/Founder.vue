@@ -75,8 +75,7 @@ onUnmounted(() => {
    BASE LAYOUT
    ========================================================================== */
 .founder-section {
-  width: 100%;
-  padding: 160px 0;
+  padding: 160px 0px;
   background-color: #ffffff;
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -88,10 +87,9 @@ onUnmounted(() => {
   position: relative;
   display: flex;
   align-items: center;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 40px;
+  width: 1400px;
+  margin: 0px auto;
+  padding: 0px 40px;
 }
 
 /* ==========================================================================
@@ -100,29 +98,30 @@ onUnmounted(() => {
 .founder-visual {
   position: relative;
   z-index: 1;
-  width: 65%;
+  width: 850px;
   margin-left: auto; 
+  perspective: 1200px; /* Required for translateZ 3D scale effect */
 }
 
 .image-wrapper {
-  width: 100%;
+  width: 850px;
   height: 700px;
   overflow: hidden;
   border-radius: 32px;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
+  box-shadow: 0px 30px 60px rgba(0, 0, 0, 0.08);
 }
 
 .founder-image {
-  width: 100%;
-  height: 100%;
+  width: 850px;
+  height: 700px;
   object-fit: cover;
-  transform: scale(1.02);
+  transform: translateZ(0px); /* Strict PX alternative to scale() */
   transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
 
 .founder-container:hover .founder-image {
-  transform: scale(1.05);
+  transform: translateZ(40px); /* Strict PX alternative to scale(1.05) */
 }
 
 /* ==========================================================================
@@ -132,34 +131,37 @@ onUnmounted(() => {
   position: absolute;
   left: 40px;
   z-index: 10;
-  width: 45%;
+  width: 600px;
   padding: 80px 72px;
-  background: rgba(255, 255, 255, 0.85); 
+  
+  /* ЗАЩИТА СТИЛЕЙ: Жестко фиксируем цвет и размытие для продакшена Vercel */
+  background-color: rgba(255, 255, 255, 0.85) !important; 
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 24px;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.06), 0 10px 20px rgba(0, 0, 0, 0.03);
-  transform: translateZ(0); /* Hardware acceleration for blur performance */
+  box-shadow: 0px 40px 80px rgba(0, 0, 0, 0.06), 0px 10px 20px rgba(0, 0, 0, 0.03);
+  transform: translateZ(0px); 
 }
 
 .quote-title {
   position: relative;
   z-index: 2;
-  margin: 0 0 24px 0;
-  font-size: 35.2px;
+  margin: 0px 0px 24px 0px;
+  font-size: 35px;
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 42px;
   color: #050505;
 }
 
 .quote-text {
   position: relative;
   z-index: 2;
-  margin: 0 0 48px 0;
-  font-size: 18.4px;
+  margin: 0px 0px 48px 0px;
+  font-size: 18px;
   font-weight: 300;
-  line-height: 1.7;
+  line-height: 31px;
   color: #4a4a4a;
 }
 
@@ -178,17 +180,19 @@ onUnmounted(() => {
 .name {
   font-size: 20px;
   font-weight: 600;
+  line-height: 28px;
   color: #050505;
 }
 
 .role {
   margin-top: 4px;
-  font-size: 14.4px;
+  font-size: 14px;
+  line-height: 20px;
   color: #888888;
 }
 
 .signature-line {
-  flex-grow: 1;
+  width: 180px; /* Strict PX alternative to flex-grow: 1 */
   height: 1px;
   margin-top: 8px;
   background-color: rgba(0, 0, 0, 0.1);
@@ -204,120 +208,105 @@ onUnmounted(() => {
 }
 
 .fade-up { transform: translateY(40px); }
-.scale-up { transform: scale(0.92); }
+.scale-up { transform: translateZ(-100px); } /* Strict PX alternative to scale() */
 
 .animate-on-scroll.is-revealed {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0px) translateZ(0px); /* Reset to exact zero */
 }
 
 .delay-100 { transition-delay: 0.1s !important; }
 
 /* ==========================================================================
-   RESPONSIVE DESIGN
+   STRICT ADAPTIVE DESIGN (ONLY PX)
    ========================================================================== */
+@media (max-width: 1400px) {
+  .founder-container { width: 1140px; }
+  .founder-quote-box { width: 550px; padding: 64px 48px; }
+  .founder-visual { width: 650px; }
+  .image-wrapper, .founder-image { width: 650px; height: 600px; }
+}
+
 @media (max-width: 1200px) {
-  .founder-quote-box {
-    width: 55%;
-    padding: 64px 48px;
-  }
-  .founder-visual {
-    width: 60%;
-  }
-  .image-wrapper {
-    height: 600px;
-  }
+  .founder-container { width: 960px; }
+  .founder-quote-box { width: 480px; padding: 48px 40px; }
+  .founder-visual { width: 540px; }
+  .image-wrapper, .founder-image { width: 540px; height: 500px; }
+  .quote-title { font-size: 30px; line-height: 38px; }
 }
 
 @media (max-width: 992px) {
-  .founder-container {
-    flex-direction: column;
-    padding: 0 24px;
+  .founder-container { 
+    width: 720px; 
+    flex-direction: column; 
+    padding: 0px 24px; 
   }
   
-  .founder-visual {
-    width: 100%;
-    margin-left: 0;
+  .founder-visual { 
+    width: 672px; 
+    margin-left: 0px; 
   }
   
-  .image-wrapper {
-    height: 500px;
+  .image-wrapper, .founder-image { 
+    width: 672px; 
+    height: 500px; 
   }
 
   .founder-quote-box {
     position: relative;
-    left: 0;
-    width: 90%;
+    left: 0px;
+    width: 600px;
     margin-top: -120px; 
     padding: 48px;
   }
 }
 
 @media (max-width: 768px) {
-  .founder-section {
-    padding: 100px 0;
-  }
+  .founder-section { padding: 100px 0px; }
+  .founder-container { width: 540px; }
+  .founder-visual { width: 492px; }
   
-  .image-wrapper {
-    height: 400px;
-    border-radius: 24px;
+  .image-wrapper, .founder-image { 
+    width: 492px; 
+    height: 400px; 
+    border-radius: 24px; 
   }
 
   .founder-quote-box {
-    width: 95%;
+    width: 460px;
     margin-top: -80px;
     padding: 40px 32px;
     border-radius: 20px;
   }
 
-  .quote-title {
-    font-size: 28px;
-  }
-
-  .quote-text {
-    margin-bottom: 32px;
-    font-size: 16px;
-  }
+  .quote-title { font-size: 28px; line-height: 36px; }
+  .quote-text { margin-bottom: 32px; font-size: 16px; line-height: 28px; }
+  .signature-line { width: 120px; }
 }
 
-@media (max-width: 480px) {
-  .founder-section {
-    padding: 80px 0;
-  }
+@media (max-width: 576px) {
+  .founder-section { padding: 80px 0px; }
+  .founder-container { width: 320px; padding: 0px 10px; }
+  .founder-visual { width: 300px; }
   
-  .image-wrapper {
+  .image-wrapper, .founder-image { 
+    width: 300px; 
     height: 340px; 
-    border-radius: 20px;
+    border-radius: 20px; 
   }
 
   .founder-quote-box {
-    width: calc(100% - 16px); 
+    width: 280px; 
     margin-top: -60px;
     padding: 32px 24px; 
     border-radius: 16px;
   }
 
-  .quote-title {
-    margin-bottom: 16px;
-    font-size: clamp(22px, 24px, 26px); 
-  }
-
-  .desktop-only-text {
-    display: none;
-  }
-
-  .quote-text {
-    margin-bottom: 24px;
-    font-size: 15px; 
-    line-height: 1.6;
-  }
-
-  .name {
-    font-size: 18.4px;
-  }
-
-  .role {
-    font-size: 13.6px;
-  }
+  .quote-title { margin-bottom: 16px; font-size: 24px; line-height: 32px; }
+  .desktop-only-text { display: none; }
+  .quote-text { margin-bottom: 24px; font-size: 15px; line-height: 24px; }
+  .name { font-size: 18px; line-height: 26px; }
+  .role { font-size: 13px; line-height: 18px; }
+  .signature-line { width: 80px; }
 }
 </style>

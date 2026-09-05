@@ -7,13 +7,15 @@
     }"
   >
     <div class="header-container">
-      <a href="#" class="logo" @click.prevent="scrollToSection('top')"> GEOMETRIYA </a>
+      <!-- Логотип теперь ссылается на #top -->
+      <a href="#top" class="logo"> GEOMETRIYA </a>
 
       <nav class="desktop-nav">
-        <a href="#expertise" class="nav-link" @click.prevent="scrollToSection('expertise')">Послуги</a>
-        <a href="#portfolio" class="nav-link" @click.prevent="scrollToSection('portfolio')">Проєкти</a>
-        <a href="#reviews" class="nav-link" @click.prevent="scrollToSection('reviews')">Про нас</a>
-        <a href="#footer" class="nav-link" @click.prevent="scrollToSection('footer')">Зв'язатися</a>
+        <!-- Убраны @click.prevent, оставляем только href -->
+        <a href="#expertise" class="nav-link">Послуги</a>
+        <a href="#portfolio" class="nav-link">Проєкти</a>
+        <a href="#reviews" class="nav-link">Про нас</a>
+        <a href="#footer" class="nav-link">Зв'язатися</a>
       </nav>
 
       <div class="desktop-action">
@@ -36,10 +38,11 @@
     <div class="mobile-menu" :class="{ 'is-open': isMobileMenuOpen }">
       <div class="mobile-menu-content">
         <nav class="mobile-nav">
-          <a href="#expertise" class="mobile-link" @click.prevent="scrollToSectionMobile('expertise')">Послуги</a>
-          <a href="#portfolio" class="mobile-link" @click.prevent="scrollToSectionMobile('portfolio')">Проєкти</a>
-          <a href="#reviews" class="mobile-link" @click.prevent="scrollToSectionMobile('reviews')">Про нас</a>
-          <a href="#footer" class="mobile-link" @click.prevent="scrollToSectionMobile('footer')">Зв'язатися</a>
+          <!-- На мобильных только закрываем меню по клику. Скролл перехватит Lenis -->
+          <a href="#expertise" class="mobile-link" @click="closeMenu">Послуги</a>
+          <a href="#portfolio" class="mobile-link" @click="closeMenu">Проєкти</a>
+          <a href="#reviews" class="mobile-link" @click="closeMenu">Про нас</a>
+          <a href="#footer" class="mobile-link" @click="closeMenu">Зв'язатися</a>
         </nav>
 
         <div class="mobile-footer">
@@ -75,7 +78,6 @@ const handleScroll = () => {
   }
 
   const currentScrollY = window.scrollY;
-
   isScrolled.value = currentScrollY > 50;
 
   if (currentScrollY > lastScrollY && currentScrollY > 200) {
@@ -89,29 +91,6 @@ const handleScroll = () => {
   lastScrollY = currentScrollY;
 };
 
-const scrollToSection = (sectionId) => {
-  if (sectionId === 'top') {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-    return;
-  }
-
-  const section = document.getElementById(sectionId);
-  
-  if (section) {
-    const headerOffset = 80; 
-    const elementPosition = section.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: "smooth"
-    });
-  }
-};
-
 const toggleMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
   document.body.style.overflow = isMobileMenuOpen.value ? "hidden" : "";
@@ -122,13 +101,6 @@ const closeMenu = () => {
     isMobileMenuOpen.value = false;
     document.body.style.overflow = "";
   }
-};
-
-const scrollToSectionMobile = (sectionId) => {
-  closeMenu();
-  setTimeout(() => {
-    scrollToSection(sectionId);
-  }, 10); // Уменьшил задержку скролла, так как меню закрывается моментально
 };
 
 const openContactModal = () => {

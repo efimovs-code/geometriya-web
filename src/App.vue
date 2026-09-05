@@ -22,8 +22,11 @@
 </template>
 
 <script setup>
+import { onMounted, onUnmounted } from 'vue';
+import Lenis from 'lenis';
+
 // ==========================================================================
-// COMPONENT IMPORTS (Ordered by rendering sequence)
+// COMPONENT IMPORTS
 // ==========================================================================
 import Header from './components/Header.vue';
 import Hero from './components/Hero.vue';
@@ -32,6 +35,68 @@ import Catalog from './components/Catalog.vue';
 import Reviews from './components/Reviews.vue';
 import Founder from './components/Founder.vue';
 import Footer from './components/Footer.vue';
+
+// ==========================================================================
+// LENIS SMOOTH SCROLL INITIALIZATION
+// ==========================================================================
+let lenis;
+let rafId;
+
+// Глобальный перехватчик кликов по якорным ссылкам
+const handleAnchorClick = (e) => {
+  const anchor = e.target.closest('a');
+  
+  if (anchor && anchor.getAttribute('href')?.startsWith('#')) {
+    const target = anchor.getAttribute('href');
+    
+    e.preventDefault(); // Отключаем нативный браузерный прыжок
+    
+    // Если клик по логотипу (вверх)
+    if (target === '#top' || target === '#') {
+      lenis.scrollTo(0, {
+        duration: 1.5, // Увеличено для более мягкого эффекта
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+      });
+    } else {
+      // Скролл к секциям
+      lenis.scrollTo(target, {
+        offset: -100, 
+        duration: 1.5, // Увеличено для более мягкого эффекта
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+      });
+    }
+  }
+};
+
+onMounted(() => {
+  lenis = new Lenis({
+    duration: 1.2, 
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+    orientation: 'vertical',
+    gestureOrientation: 'vertical',
+    smoothWheel: true,
+    wheelMultiplier: 1,
+    touchMultiplier: 2, 
+  });
+
+  function raf(time) {
+    lenis.raf(time);
+    rafId = requestAnimationFrame(raf);
+  }
+
+  rafId = requestAnimationFrame(raf);
+  document.addEventListener('click', handleAnchorClick);
+});
+
+onUnmounted(() => {
+  if (lenis) {
+    lenis.destroy();
+  }
+  if (rafId) {
+    cancelAnimationFrame(rafId);
+  }
+  document.removeEventListener('click', handleAnchorClick);
+});
 </script>
 
 <style scoped>

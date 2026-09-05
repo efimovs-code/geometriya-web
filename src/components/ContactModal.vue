@@ -1,6 +1,7 @@
 <template>
   <Transition name="modal-fade">
-    <div v-if="isOpen" class="modal-overlay" @click.self="closeModal">
+    <!-- Добавлен атрибут data-lenis-prevent для предотвращения скролла документа при касании модалки -->
+    <div v-if="isOpen" class="modal-overlay" @click.self="closeModal" data-lenis-prevent>
       
       <div class="modal-container">
         <!-- Close Button -->
@@ -58,7 +59,6 @@
               </svg>
             </div>
             <div class="contact-info">
-              <!-- Динамічний текст з кольоровою індикацією при копіюванні -->
               <span class="contact-label" :class="{ 'text-success': isEmailCopied }">
                 {{ isEmailCopied ? 'Email скопійовано!' : 'Відправити Email' }}
               </span>
@@ -89,15 +89,8 @@ const closeModal = () => {
   emit('close');
 };
 
-// Стейт для відстеження копіювання Email
 const isEmailCopied = ref(false);
 
-/**
- * Логіка обробки кліку по Email
- * 1. Копіює email у буфер обміну
- * 2. Показує повідомлення "Email скопійовано"
- * 3. Викликає mailto для відкриття пошти
- */
 const handleEmailClick = async () => {
   const email = 'geometriya.info@gmail.com';
   const subject = 'Обговорення проєкту';
@@ -107,7 +100,6 @@ const handleEmailClick = async () => {
     await navigator.clipboard.writeText(email);
     isEmailCopied.value = true;
     
-    // Повертаємо початковий текст через 2 секунди
     setTimeout(() => {
       isEmailCopied.value = false;
     }, 2000);
@@ -115,15 +107,9 @@ const handleEmailClick = async () => {
     console.error('Помилка копіювання: ', err);
   }
 
-  // Запуск нативного поштового клієнта
   window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 };
 
-/**
- * Smart body scroll lock.
- * Calculates scrollbar width to prevent layout shift (Jitter) when modal opens.
- * Also synchronizes the fixed header offset.
- */
 watch(() => props.isOpen, (newVal) => {
   const header = document.querySelector('.header-section');
   
@@ -131,7 +117,7 @@ watch(() => props.isOpen, (newVal) => {
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     
     document.body.style.paddingRight = `${scrollbarWidth}px`;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden'; // Это правило также заморозит Lenis на фоне
     
     if (header) {
       header.style.paddingRight = `${scrollbarWidth}px`;
@@ -146,7 +132,6 @@ watch(() => props.isOpen, (newVal) => {
   }
 });
 
-// Cleanup logic to ensure body is unlocked if component unmounts unexpectedly
 onUnmounted(() => {
   document.body.style.paddingRight = '';
   document.body.style.overflow = '';
@@ -268,7 +253,7 @@ onUnmounted(() => {
 }
 
 .contact-card {
-  position: relative; /* CRITICAL: Required for invisible hover hitbox */
+  position: relative; 
   display: flex;
   align-items: center;
   width: 100%;
@@ -281,10 +266,9 @@ onUnmounted(() => {
   box-sizing: border-box;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, border-color;
-  transform: translateZ(0);
+  transform: translateZ(0); /* Аппаратное ускорение */
 }
 
-/* Скидання базових стилів для кнопки (щоб вона виглядала як посилання) */
 .btn-reset {
   appearance: none;
   outline: none;
@@ -293,7 +277,6 @@ onUnmounted(() => {
   cursor: pointer;
 }
 
-/* Invisible hitbox extending hover area by 15px */
 .contact-card::after {
   content: "";
   position: absolute;
@@ -314,12 +297,12 @@ onUnmounted(() => {
    ICONS & TEXT
    ========================================================================== */
 .icon-wrapper {
-  position: relative; /* Protect from invisible hitbox overlap */
+  position: relative; 
   z-index: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-shrink: 0; /* Prevent icon squishing on mobile */
+  flex-shrink: 0; 
   width: 48px;
   height: 48px;
   color: #ffffff;
@@ -345,7 +328,7 @@ onUnmounted(() => {
   flex-direction: column;
   flex-grow: 1;
   gap: 4px;
-  overflow: hidden; /* Prevent text overflow */
+  overflow: hidden; 
 }
 
 .contact-label {
@@ -362,9 +345,8 @@ onUnmounted(() => {
   color: #c5a059;
 }
 
-/* Color, when email is copied */
 .contact-label.text-success {
-  color: #4ade80; /* М'який зелений */
+  color: #4ade80; 
 }
 
 .contact-value {
@@ -373,7 +355,6 @@ onUnmounted(() => {
   color: #ffffff;
 }
 
-/* Force long emails to truncate with ellipsis */
 .email-value {
   white-space: nowrap;
   overflow: hidden;
@@ -431,7 +412,6 @@ onUnmounted(() => {
     white-space: nowrap; 
   }
 
-  /* Hide secondary text line on narrow screens */
   .desktop-only-text {
     display: none;
   }

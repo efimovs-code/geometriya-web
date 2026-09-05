@@ -87,7 +87,7 @@
          SLIDE 03: EXCLUSIVE INTERIORS
          ========================================================================== -->
     <article class="expertise-slide bg-gray">
-      <div class="slide-content">
+      <div class="slide-content">    
         <div class="content-inner">
           <span class="slide-number">03</span>
           <h2 class="slide-title animate-on-scroll fade-up delay-100">

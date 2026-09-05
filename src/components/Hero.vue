@@ -1,21 +1,24 @@
 <template>
-  <!-- Динамически биндим точную высоту в пикселях -->
-  <section class="hero-section" :style="{ minHeight: exactHeightPx + 'px' }">
+  <!-- Привязываем динамическую высоту в px через JS -->
+  <section class="hero-section" :style="{ minHeight: heroHeight }">
     <div class="hero-container">
       
       <!-- ==========================================================================
            CONTENT BLOCK
            ========================================================================== -->
       <div class="hero-content">
+        <!-- Headline -->
         <h1 class="hero-title animate-title">
           Створюємо нові<br/>концепції
         </h1>
         
+        <!-- Subtitle / Description -->
         <p class="hero-description animate-desc">
           Наша мета — наповнити кожен простір справжнім затишком,<br />
           поєднавши бездоганну естетику та абсолютний комфорт.
         </p>
         
+        <!-- Call to Action Buttons -->
         <div class="hero-actions animate-actions">
           <div class="btn-wrapper">
             <a href="#portfolio" class="btn btn-dark">Переглянути колекцію</a>
@@ -53,6 +56,9 @@
 
     </div>
 
+    <!-- ==========================================================================
+         MODAL TELEPORT
+         ========================================================================== -->
     <Teleport to="body">
       <ContactModal :isOpen="isModalOpen" @close="isModalOpen = false" />
     </Teleport>
@@ -65,28 +71,41 @@ import ContactModal from './ContactModal.vue';
 
 const isModalOpen = ref(false);
 
-// Устанавливаем базовое значение в пикселях (fallback)
-const exactHeightPx = ref(900); 
-
 const openModal = () => {
   isModalOpen.value = true;
 };
 
-// Функция для точного расчета высоты экрана в пикселях
-const calculateScreenHeight = () => {
-  exactHeightPx.value = window.innerHeight;
+// ==========================================================================
+// FULLSCREEN HEIGHT LOGIC (F11 & Mobile Scroll Fix)
+// ==========================================================================
+// По умолчанию 100vh, пока JS не вычислит точные пиксели
+const heroHeight = ref('100vh'); 
+let lastWidth = 0;
+
+const calculateHeight = () => {
+  const currentWidth = window.innerWidth;
+  const isMobile = currentWidth <= 992;
+  
+  // ГРАМОТНЫЙ ФИКС: 
+  // На мобилках (<=992px) при скролле прячется адресная строка и срабатывает 'resize'.
+  // Чтобы экран не "прыгал", мы игнорируем 'resize', если ширина не изменилась.
+  // НО на ПК (>992px) мы обновляем высоту всегда, чтобы при нажатии F11 (меняется только высота) 
+  // блок пересчитывался и занимал 100% экрана без кусков следующего компонента.
+  if (isMobile && currentWidth === lastWidth) {
+    return; 
+  }
+  
+  heroHeight.value = `${window.innerHeight}px`;
+  lastWidth = currentWidth;
 };
 
 onMounted(() => {
-  // Сразу при монтировании компонента вычисляем высоту
-  calculateScreenHeight();
-  
-  // Добавляем слушатель изменения размера окна (если пользователь перевернет телефон)
-  window.addEventListener('resize', calculateScreenHeight);
+  calculateHeight(); // Первичный расчет при загрузке
+  window.addEventListener('resize', calculateHeight);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', calculateScreenHeight);
+  window.removeEventListener('resize', calculateHeight);
 });
 </script>
 
@@ -99,13 +118,12 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* min-height удален отсюда, так как теперь он задается строго в JS */
+  width: 100%;
+  /* Высота теперь полностью управляется через JS :style="{ minHeight: heroHeight }" */
   background-color: #e6e6e6;
   overflow: hidden;
   z-index: 10;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05);
-  perspective: 2000px; 
-  
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -116,35 +134,37 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   gap: 60px;
-  width: 1300px;
-  margin: 0px auto;
-  padding: 0px 40px;
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 40px;
 }
 
 /* ==========================================================================
    CONTENT TYPOGRAPHY
    ========================================================================== */
 .hero-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  width: 650px;
+  max-width: 650px;
 }
 
 .hero-title {
-  margin: 0px 0px 24px 0px;
+  margin: 0 0 24px 0;
   font-size: 88px;
   font-weight: 600;
   color: #795c46;
-  line-height: 96px;
-  letter-spacing: -2px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
   white-space: nowrap; 
 }
 
 .hero-description {
-  margin: 0px 0px 48px 0px;
+  margin: 0 0 48px 0;
   font-size: 20px;
   color: #4a4a4a;
-  line-height: 34px;
+  line-height: 1.7;
 }
 
 /* ==========================================================================
@@ -153,7 +173,6 @@ onUnmounted(() => {
 .hero-actions {
   display: flex;
   gap: 20px;
-  width: 650px;
 }
 
 .btn-wrapper {
@@ -189,7 +208,7 @@ onUnmounted(() => {
   background-color: #c5a059;
   border-color: #c5a059;
   transform: translateY(-4px);
-  box-shadow: 0px 15px 30px rgba(197, 160, 89, 0.2);
+  box-shadow: 0 15px 30px rgba(197, 160, 89, 0.2);
 }
 
 .btn-outline {
@@ -201,18 +220,18 @@ onUnmounted(() => {
 .btn-wrapper:hover .btn-outline {
   border-color: #050505;
   transform: translateY(-4px);
-  box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
 }
 
 /* ==========================================================================
    3D GEOMETRY VISUALS
    ========================================================================== */
 .hero-visual {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
-  width: 500px;
   height: 500px;
 }
 
@@ -221,13 +240,13 @@ onUnmounted(() => {
   width: 400px;
   height: 400px;
   perspective: 1200px;
-  filter: drop-shadow(0px 40px 50px rgba(121, 92, 70, 0.15));
+  filter: drop-shadow(0 40px 50px rgba(121, 92, 70, 0.15));
 }
 
 .cube {
   position: absolute;
-  top: 200px; 
-  left: 200px;
+  top: 50%;
+  left: 50%;
   transform-style: preserve-3d;
 }
 
@@ -249,15 +268,14 @@ onUnmounted(() => {
 
 .face {
   position: absolute;
+  width: 100%;
+  height: 100%;
   backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
   transition: all 0.3s ease;
 }
 
 /* Outer Cube Faces */
 .outer-cube .face {
-  width: 280px;
-  height: 280px;
   border: 1px solid rgba(121, 92, 70, 0.4);
   background: rgba(121, 92, 70, 0.03);
 }
@@ -270,8 +288,6 @@ onUnmounted(() => {
 
 /* Inner Cube Faces */
 .inner-cube .face {
-  width: 140px;
-  height: 140px;
   border: 2px solid rgba(5, 5, 5, 0.8);
   background: rgba(5, 5, 5, 0.05);
 }
@@ -297,12 +313,12 @@ onUnmounted(() => {
 
 @keyframes fadeUp {
   0% { opacity: 0; transform: translateY(40px); }
-  100% { opacity: 1; transform: translateY(0px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleFadeIn {
-  0% { opacity: 0; transform: translateZ(-300px); }
-  100% { opacity: 1; transform: translateZ(0px); }
+  0% { opacity: 0; transform: scale(0.8) translateZ(-100px); }
+  100% { opacity: 1; transform: scale(1) translateZ(0); }
 }
 
 /* Staggered Entry Sequence */
@@ -316,66 +332,61 @@ onUnmounted(() => {
 .animate-visual  { animation: scaleFadeIn 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.6s; }
 
 /* ==========================================================================
-   STRICT ADAPTIVE DESIGN (ONLY PX)
+   RESPONSIVE DESIGN
    ========================================================================== */
-@media (max-width: 1400px) {
-  .hero-container { width: 1140px; }
-  .hero-content { width: 550px; }
-  .hero-visual { width: 450px; }
-}
-
-@media (max-width: 1200px) {
-  .hero-container { width: 960px; }
-  .hero-content { width: 450px; }
-  .hero-title { font-size: 64px; line-height: 72px; }
-  .hero-visual { width: 400px; }
-}
-
 @media (max-width: 992px) {
-  .hero-container { 
-    width: 720px; 
-    flex-direction: column; 
+  .hero-container {
     justify-content: center;
     text-align: center;
-    padding: 0px 24px; 
+    padding: 0 24px;
   }
-  .hero-content { 
-    width: 720px; 
-    align-items: center; 
+  
+  .hero-content {
+    align-items: center;
+    max-width: 100%;
   }
-  .hero-title { font-size: 56px; line-height: 64px; }
-  .hero-description { width: 500px; margin-bottom: 40px; }
   
-  .hero-description br { display: none; }
+  .hero-title {
+    font-size: 56px;
+  }
   
-  .hero-actions { justify-content: center; }
-  .hero-visual { display: none; }
-}
+  .hero-description {
+    max-width: 500px;
+    margin-bottom: 40px;
+  }
 
-@media (max-width: 768px) {
-  .hero-container { width: 540px; }
-  .hero-content { width: 540px; }
+  /* Hide <br> tags on mobile for natural text flow */
+  .hero-description br {
+    display: none;
+  }
+
+  .hero-visual {
+    display: none;
+  }
 }
 
 @media (max-width: 576px) {
-  .hero-container { width: 320px; padding: 0px 10px; }
-  .hero-content { width: 300px; }
-  .hero-title { font-size: 32px; line-height: 40px; }
-  .hero-description { width: 300px; font-size: 16px; line-height: 28px; }
-  
-  .hero-actions { 
-    flex-direction: column; 
-    width: 300px; 
-    gap: 16px; 
+  .hero-container {
+    padding: 0 20px;
+  }
+
+  .hero-title {
+    font-size: 38px; 
   }
   
-  .btn-wrapper, .btn { 
-    width: 300px; 
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 16px;
   }
-  
-  .btn { 
-    padding: 18px 16px; 
-    font-size: 12px; 
+
+  .btn-wrapper, .btn {
+    width: 100%;
+  }
+
+  .btn {
+    padding: 18px 16px;
+    font-size: 11.5px;
   }
 }
-</style>  
+</style>

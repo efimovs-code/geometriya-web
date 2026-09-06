@@ -101,32 +101,32 @@ const handleNavClick = (e, target) => {
   e.preventDefault(); 
 
   if (isMobileMenuOpen.value) {
-
     isMobileMenuOpen.value = false;
     document.body.style.overflow = "";
 
-  
     if (lenis && lenis.value) {
       lenis.value.resize();
     }
 
-  
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        scrollToTarget(target);
-      });
-    });
+    // Extended delay to guarantee UI is ready before extreme slow scroll
+    setTimeout(() => {
+      scrollToTarget(target);
+    }, 350);
   } else {
     scrollToTarget(target);
   }
 };
 
 const scrollToTarget = (target) => {
+  const isMobile = window.innerWidth <= 992;
+
   if (lenis && lenis.value) {
     lenis.value.scrollTo(target === '#top' ? 0 : target, {
       offset: target === '#top' ? 0 : -100,
-      duration: 3, 
-      easing: (t) => 1 - Math.pow(1 - t, 5) 
+      // Ultra-slow duration: 8.5 seconds on mobile for maximum float
+      duration: isMobile ? 8.5 : 4.0, 
+      // Power 8 curve (Octic Out) for an extremely long, weightless deceleration
+      easing: (t) => 1 - Math.pow(1 - t, 8) 
     });
   } else if (target !== '#top') {
     document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });

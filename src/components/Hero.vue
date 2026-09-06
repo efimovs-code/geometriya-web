@@ -77,7 +77,6 @@ import ContactModal from './ContactModal.vue';
 
 const isModalOpen = ref(false);
 
-// Подтягиваем глобальный Lenis
 const lenis = inject('lenis');
 
 const openModal = () => {
@@ -90,11 +89,15 @@ const openModal = () => {
 const handleScrollTo = (e, target) => {
   e.preventDefault(); 
 
+  const isMobile = window.innerWidth <= 992;
+
   if (lenis && lenis.value) {
     lenis.value.scrollTo(target, {
       offset: -100, 
-      duration: 2.8, 
-      easing: (t) => 1 - Math.pow(1 - t, 5) 
+      // Extreme duration: 12 seconds on mobile for absolute zero-gravity float
+      duration: isMobile ? 12.0 : 4.0, 
+      // Power 10 curve (Decic Out) for the longest possible deceleration tail
+      easing: (t) => 1 - Math.pow(1 - t, 10) 
     });
   } else {
     document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
@@ -102,20 +105,18 @@ const handleScrollTo = (e, target) => {
 };
 
 // ==========================================================================
-// FULLSCREEN HEIGHT LOGIC (OPTIMIZED TO PREVENT LAYOUT THRASHING)
+// FULLSCREEN HEIGHT LOGIC
 // ==========================================================================
 const heroHeight = ref('100vh'); 
 let lastWidth = 0;
 let resizeTimeout = null;
 
 const calculateHeight = () => {
-  // Очищаем предыдущий таймер
   if (resizeTimeout) {
     clearTimeout(resizeTimeout);
   }
 
-  // Ждем 150мс после того как скролл/ресайз закончился, и только потом вычисляем размер.
-  // Это полностью убивает ошибку "Принудительная компоновка" от Google!
+  // Prevents Layout Thrashing on mobile scroll
   resizeTimeout = setTimeout(() => {
     const currentWidth = window.innerWidth;
     const isMobile = currentWidth <= 992;
@@ -130,7 +131,6 @@ const calculateHeight = () => {
 };
 
 onMounted(() => {
-  // Первичный расчет вызываем сразу, без задержки
   heroHeight.value = `${window.innerHeight}px`;
   lastWidth = window.innerWidth;
   

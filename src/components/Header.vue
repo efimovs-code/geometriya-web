@@ -7,15 +7,15 @@
     }"
   >
     <div class="header-container">
-      <!-- Логотип теперь ссылается на #top -->
-      <a href="#top" class="logo"> GEOMETRIYA </a>
+      <!-- The logo references #top -->
+      <a href="#top" class="logo" @click="handleNavClick($event, '#top')"> GEOMETRIYA </a>
 
       <nav class="desktop-nav">
-        <!-- Убраны @click.prevent, оставляем только href -->
-        <a href="#expertise" class="nav-link">Послуги</a>
-        <a href="#portfolio" class="nav-link">Проєкти</a>
-        <a href="#reviews" class="nav-link">Про нас</a>
-        <a href="#footer" class="nav-link">Зв'язатися</a>
+        <!-- Navigation with a custom click handler -->
+        <a href="#expertise" class="nav-link" @click="handleNavClick($event, '#expertise')">Послуги</a>
+        <a href="#portfolio" class="nav-link" @click="handleNavClick($event, '#portfolio')">Проєкти</a>
+        <a href="#reviews" class="nav-link" @click="handleNavClick($event, '#reviews')">Про нас</a>
+        <a href="#footer" class="nav-link" @click="handleNavClick($event, '#footer')">Зв'язатися</a>
       </nav>
 
       <div class="desktop-action">
@@ -38,11 +38,10 @@
     <div class="mobile-menu" :class="{ 'is-open': isMobileMenuOpen }">
       <div class="mobile-menu-content">
         <nav class="mobile-nav">
-          <!-- На мобильных только закрываем меню по клику. Скролл перехватит Lenis -->
-          <a href="#expertise" class="mobile-link" @click="closeMenu">Послуги</a>
-          <a href="#portfolio" class="mobile-link" @click="closeMenu">Проєкти</a>
-          <a href="#reviews" class="mobile-link" @click="closeMenu">Про нас</a>
-          <a href="#footer" class="mobile-link" @click="closeMenu">Зв'язатися</a>
+          <a href="#expertise" class="mobile-link" @click="handleNavClick($event, '#expertise')">Послуги</a>
+          <a href="#portfolio" class="mobile-link" @click="handleNavClick($event, '#portfolio')">Проєкти</a>
+          <a href="#reviews" class="mobile-link" @click="handleNavClick($event, '#reviews')">Про нас</a>
+          <a href="#footer" class="mobile-link" @click="handleNavClick($event, '#footer')">Зв'язатися</a>
         </nav>
 
         <div class="mobile-footer">
@@ -59,13 +58,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, inject } from "vue";
 import ContactModal from "./ContactModal.vue";
 
 const isScrolled = ref(false);
 const isHidden = ref(false);
 const isMobileMenuOpen = ref(false);
 const isModalOpen = ref(false);
+
+const lenis = inject('lenis'); 
 
 let lastScrollY = 0;
 
@@ -96,10 +97,39 @@ const toggleMenu = () => {
   document.body.style.overflow = isMobileMenuOpen.value ? "hidden" : "";
 };
 
-const closeMenu = () => {
+const handleNavClick = (e, target) => {
+  e.preventDefault(); 
+
   if (isMobileMenuOpen.value) {
+
     isMobileMenuOpen.value = false;
     document.body.style.overflow = "";
+
+  
+    if (lenis && lenis.value) {
+      lenis.value.resize();
+    }
+
+  
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        scrollToTarget(target);
+      });
+    });
+  } else {
+    scrollToTarget(target);
+  }
+};
+
+const scrollToTarget = (target) => {
+  if (lenis && lenis.value) {
+    lenis.value.scrollTo(target === '#top' ? 0 : target, {
+      offset: target === '#top' ? 0 : -100,
+      duration: 3, 
+      easing: (t) => 1 - Math.pow(1 - t, 5) 
+    });
+  } else if (target !== '#top') {
+    document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
   }
 };
 
@@ -270,8 +300,6 @@ onUnmounted(() => {
   transform: translate(-50%, 50%) rotate(-45deg);
 }
 
-/* ================== УБРАНЫ АНИМАЦИИ В БЛОКАХ НИЖЕ ================== */
-
 .mobile-menu {
   position: fixed;
   top: 0;
@@ -286,7 +314,6 @@ onUnmounted(() => {
   padding: 0 40px;
   opacity: 0;
   visibility: hidden;
-  /* transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); — УДАЛЕНО */
 }
 
 .mobile-menu.is-open {
@@ -299,10 +326,7 @@ onUnmounted(() => {
   flex-direction: column;
   width: 100%;
   gap: 60px;
-  /* Смещение вниз и анимации тоже удалены */
 }
-
-/* Блок .mobile-menu.is-open .mobile-menu-content { transform: translateY(0); } тоже удален */
 
 .mobile-nav {
   display: flex;

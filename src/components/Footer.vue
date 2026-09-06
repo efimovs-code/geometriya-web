@@ -282,7 +282,7 @@ onUnmounted(() => {
 
 .copyright {
   font-size: 13.6px;
-  color: #888888;
+  color: #595959; 
 }
 
 /* ==========================================================================
@@ -366,7 +366,7 @@ onUnmounted(() => {
   }
 
   .footer-title {
-    font-size: 28px; /* Fixed pixel value instead of clamp */
+    font-size: 28px; 
     white-space: nowrap; 
   }
 
@@ -390,7 +390,7 @@ onUnmounted(() => {
   }
 
   .minimal-link {
-    font-size: 18px; /* Fixed pixel value instead of clamp */
+    font-size: 18px; 
   }
 
   .footer-bottom {

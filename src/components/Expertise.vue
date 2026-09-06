@@ -19,7 +19,7 @@
     <article class="expertise-slide bg-gray">
       <div class="slide-content">
         <div class="content-inner">
-          <span class="slide-number">01</span>
+          <span class="slide-number" aria-hidden="true">01</span>
           <h2 class="slide-title animate-on-scroll fade-up delay-100">
             Кухні <br/> преміум-класу
           </h2>
@@ -54,7 +54,7 @@
     <article class="expertise-slide reverse bg-white">
       <div class="slide-content">
         <div class="content-inner">
-          <span class="slide-number">02</span>
+          <span class="slide-number" aria-hidden="true">02</span>
           <h2 class="slide-title animate-on-scroll fade-up delay-100">
             Гардеробні <br/> системи
           </h2>
@@ -89,7 +89,7 @@
     <article class="expertise-slide bg-gray">
       <div class="slide-content">    
         <div class="content-inner">
-          <span class="slide-number">03</span>
+          <span class="slide-number" aria-hidden="true">03</span>
           <h2 class="slide-title animate-on-scroll fade-up delay-100">
             Ексклюзивні <br/> інтер'єри
           </h2>
@@ -141,12 +141,10 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import ContactModal from './ContactModal.vue';
 
-// Image assets (Kitchens)
 import imgKitchenMain from '../assets/kitchen-main.jpg';
 import imgKitchenDrawers from '../assets/kitchen-drawers.jpg';
 import imgKitchenUpper from '../assets/kitchen-upper-cabinets.jpg';
 
-// Image assets (Wardrobes)
 import imgGarderob1 from '../assets/interior-wood-slats.jpg';
 import imgGarderob2 from '../assets/garderob.jpg';
 import imgGarderob3 from '../assets/garderob-2.jpg';
@@ -155,12 +153,10 @@ import imgGarderob4 from '../assets/garderob-3.jpg';
 const kitchenImages = [imgKitchenMain, imgKitchenDrawers, imgKitchenUpper];
 const garderobImages = [imgGarderob1, imgGarderob2, imgGarderob3, imgGarderob4];
 
-// Reactive state
 const isModalOpen = ref(false);
 const currentKitchenIndex = ref(0);
 const currentGarderobIndex = ref(0);
 
-// Timer and Observer references
 let kitchenInterval = null;
 let garderobInterval = null;
 let observer = null; 
@@ -169,7 +165,6 @@ const openModal = () => {
   isModalOpen.value = true;
 };
 
-// Initialization and cleanup
 onMounted(() => {
   kitchenInterval = setInterval(() => {
     currentKitchenIndex.value = (currentKitchenIndex.value + 1) % kitchenImages.length;
@@ -487,7 +482,6 @@ onUnmounted(() => {
 }
 
 .fade-up { transform: translateY(40px); }
-
 
 .animate-on-scroll.is-revealed {
   opacity: 1;

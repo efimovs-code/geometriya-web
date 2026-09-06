@@ -23,7 +23,7 @@
 defineProps({
   theme: {
     type: String,
-    default: "dark", // 'dark' for light/white/gray backgrounds, 'light' for dark backgrounds
+    default: "dark", 
     validator: (value) => ["light", "dark"].includes(value),
   },
 });
@@ -100,7 +100,7 @@ defineProps({
    ========================================================================== */
 /* THEME: DARK (For placement on light, white, or gray backgrounds) */
 .theme-dark .watermark-top {
-  color: rgba(5, 5, 5, 0.5);
+  color: rgba(5, 5, 5, 0.65); 
 }
 .theme-dark .watermark-bottom {
   color: #050505;

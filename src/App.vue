@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, provide, shallowRef } from 'vue';
 import Lenis from 'lenis';
 
 // ==========================================================================
@@ -39,29 +39,35 @@ import Footer from './components/Footer.vue';
 // ==========================================================================
 // LENIS SMOOTH SCROLL INITIALIZATION
 // ==========================================================================
-let lenis;
+//We use `shallowRef` and `provide` to pass Lenis to `Header.vue`.
+const lenis = shallowRef(null);
+provide('lenis', lenis);
+
 let rafId;
 
-// Глобальный перехватчик кликов по якорным ссылкам
+// Global anchor link click interceptor
 const handleAnchorClick = (e) => {
+ 
+  if (e.defaultPrevented) return;
+
   const anchor = e.target.closest('a');
   
   if (anchor && anchor.getAttribute('href')?.startsWith('#')) {
     const target = anchor.getAttribute('href');
     
-    e.preventDefault(); // Отключаем нативный браузерный прыжок
+    e.preventDefault(); 
     
-    // Если клик по логотипу (вверх)
+    
     if (target === '#top' || target === '#') {
-      lenis.scrollTo(0, {
-        duration: 1.5, // Увеличено для более мягкого эффекта
+      lenis.value?.scrollTo(0, {
+        duration: 1.5,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
       });
     } else {
-      // Скролл к секциям
-      lenis.scrollTo(target, {
+     
+      lenis.value?.scrollTo(target, {
         offset: -100, 
-        duration: 1.5, // Увеличено для более мягкого эффекта
+        duration: 1.5, 
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
       });
     }
@@ -69,7 +75,7 @@ const handleAnchorClick = (e) => {
 };
 
 onMounted(() => {
-  lenis = new Lenis({
+  lenis.value = new Lenis({
     duration: 1.2, 
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
     orientation: 'vertical',
@@ -80,7 +86,7 @@ onMounted(() => {
   });
 
   function raf(time) {
-    lenis.raf(time);
+    lenis.value?.raf(time);
     rafId = requestAnimationFrame(raf);
   }
 
@@ -89,8 +95,8 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  if (lenis) {
-    lenis.destroy();
+  if (lenis.value) {
+    lenis.value.destroy();
   }
   if (rafId) {
     cancelAnimationFrame(rafId);
@@ -118,9 +124,9 @@ onUnmounted(() => {
    SMOOTH SCROLL OFFSET FIX
    ========================================================================== */
 /* 
-  Використовуємо :deep(), щоб достукатися до кореневих елементів <section> 
-  всередині дочірніх компонентів. Це захищає заголовки від перекриття 
-  фіксованою шапкою при прямому переході за якірним посиланням (#id).
+Vickory uses :deep() to reach root <section> elements 
+  in the middle of the subsidiary components. This protects headers from being overwritten 
+  with a fixed header when going directly to the main message (#id).
 */
 :deep(section),
 :deep(footer) {

@@ -21,7 +21,13 @@
         <!-- Call to Action Buttons -->
         <div class="hero-actions animate-actions">
           <div class="btn-wrapper">
-            <a href="#portfolio" class="btn btn-dark">Переглянути колекцію</a>
+            <a 
+              href="#portfolio" 
+              class="btn btn-dark"
+              @click="handleScrollTo($event, '#portfolio')"
+            >
+              Переглянути колекцію
+            </a>
           </div>
           
           <div class="btn-wrapper">
@@ -66,45 +72,73 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, inject } from 'vue';
 import ContactModal from './ContactModal.vue';
 
 const isModalOpen = ref(false);
+
+// Подтягиваем глобальный Lenis
+const lenis = inject('lenis');
 
 const openModal = () => {
   isModalOpen.value = true;
 };
 
 // ==========================================================================
-// FULLSCREEN HEIGHT LOGIC (F11 & Mobile Scroll Fix)
+// SMOOTH SCROLL LOGIC
 // ==========================================================================
-// По умолчанию 100vh, пока JS не вычислит точные пиксели
+const handleScrollTo = (e, target) => {
+  e.preventDefault(); 
+
+  if (lenis && lenis.value) {
+    lenis.value.scrollTo(target, {
+      offset: -100, 
+      duration: 2.8, 
+      easing: (t) => 1 - Math.pow(1 - t, 5) 
+    });
+  } else {
+    document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
+// ==========================================================================
+// FULLSCREEN HEIGHT LOGIC (OPTIMIZED TO PREVENT LAYOUT THRASHING)
+// ==========================================================================
 const heroHeight = ref('100vh'); 
 let lastWidth = 0;
+let resizeTimeout = null;
 
 const calculateHeight = () => {
-  const currentWidth = window.innerWidth;
-  const isMobile = currentWidth <= 992;
-  
-  // ГРАМОТНЫЙ ФИКС: 
-  // На мобилках (<=992px) при скролле прячется адресная строка и срабатывает 'resize'.
-  // Чтобы экран не "прыгал", мы игнорируем 'resize', если ширина не изменилась.
-  // НО на ПК (>992px) мы обновляем высоту всегда, чтобы при нажатии F11 (меняется только высота) 
-  // блок пересчитывался и занимал 100% экрана без кусков следующего компонента.
-  if (isMobile && currentWidth === lastWidth) {
-    return; 
+  // Очищаем предыдущий таймер
+  if (resizeTimeout) {
+    clearTimeout(resizeTimeout);
   }
-  
-  heroHeight.value = `${window.innerHeight}px`;
-  lastWidth = currentWidth;
+
+  // Ждем 150мс после того как скролл/ресайз закончился, и только потом вычисляем размер.
+  // Это полностью убивает ошибку "Принудительная компоновка" от Google!
+  resizeTimeout = setTimeout(() => {
+    const currentWidth = window.innerWidth;
+    const isMobile = currentWidth <= 992;
+    
+    if (isMobile && currentWidth === lastWidth) {
+      return; 
+    }
+    
+    heroHeight.value = `${window.innerHeight}px`;
+    lastWidth = currentWidth;
+  }, 150);
 };
 
 onMounted(() => {
-  calculateHeight(); // Первичный расчет при загрузке
+  // Первичный расчет вызываем сразу, без задержки
+  heroHeight.value = `${window.innerHeight}px`;
+  lastWidth = window.innerWidth;
+  
   window.addEventListener('resize', calculateHeight);
 });
 
 onUnmounted(() => {
+  if (resizeTimeout) clearTimeout(resizeTimeout);
   window.removeEventListener('resize', calculateHeight);
 });
 </script>

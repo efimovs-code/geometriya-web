@@ -32,6 +32,8 @@
                 alt="Кухні за індивідуальними розмірами" 
                 class="card-image slider-image" 
                 :class="{ 'is-active': currentKitchenIndex === index }"
+                loading="lazy" 
+                decoding="async"
               />
             </div>
             <div class="card-content">
@@ -59,6 +61,8 @@
                 alt="Гардеробні системи" 
                 class="card-image slider-image" 
                 :class="{ 'is-active': currentWardrobeIndex === index }"
+                loading="lazy" 
+                decoding="async"
               />
             </div>
             <div class="card-content">
@@ -86,6 +90,8 @@
                 alt="Комплексні меблеві рішення, ЖК Паркові Озера" 
                 class="card-image slider-image" 
                 :class="{ 'is-active': currentFurnitureIndex === index }"
+                loading="lazy" 
+                decoding="async"
               />
             </div>
             <div class="card-content">
